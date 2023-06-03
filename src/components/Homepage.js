@@ -1,13 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Circle, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
 import L from 'leaflet';
 import 'leaflet-routing-machine';
+import getCrimes from '../services/getCrimes';
 
 function Homepage() {
     const seattleLatLong = [47.609687, -122.333131]; // Seattle coordinates
     const newYorkLatLong = [47.609687, -122.20]; // New York coordinates
+    const [crimeData, setCrimeData] = useState([]);
+
+    useEffect(() => {
+        const gettingCrimeData = async () => {
+            await getCrimes.getCrimes().then((response) => {
+                const { data } = response;
+                console.log(data);
+                setCrimeData(data);
+            });
+        };
+        gettingCrimeData();
+    }, []);
 
     const routingUrl = `https://api.jawg.io/routing/route/v1/car/${seattleLatLong[1]},${seattleLatLong[0]};${newYorkLatLong[1]},${newYorkLatLong[0]}?overview=false&access-token=D7N8aZgZjVj8nE4w8TF0Onz6DLdRKWQefLhiXFzdAMvgHR5R6YkdQmz8xR50y81d`;
 
@@ -51,10 +64,29 @@ function Homepage() {
     function MapComponent() {
         const map = useMap();
         useEffect(() => {
-            handleMapLoad(map);
-        }, [routingUrl]); // Only re-run the effect when routingUrl changes
+            if (routingUrl) {
+                handleMapLoad(map);
+            }
+        }, [map, routingUrl]);
 
-        return null;
+        return (
+            <>
+                {crimeData.map((block, index) => {
+                    const { centroid } = block;
+                    if (centroid && centroid.length === 2) {
+                        return (
+                            <Circle
+                                key={index}
+                                center={centroid}
+                                pathOptions={{ color: 'red', fillOpacity: 0.5 }}
+                                radius={1000} // Radius in meters (2 kilometers)
+                            />
+                        );
+                    }
+                    return null;
+                })}
+            </>
+        );
     }
 
     return (

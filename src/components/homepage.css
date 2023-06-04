@@ -1,0 +1,15 @@
+.filters {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: white;
+    padding: 10px;
+    z-index: 1000;
+    text-align: left;
+}
+
+.map-container {
+    height: 100vh;
+    width: 100%;
+    position: relative;
+}

@@ -34,7 +34,7 @@ function Home() {
                     window.location.href = '/'
                 }}
             >
-                Know Your Seattle
+                Know Your Seattle Way
             </span>
             {/* <BottomNavigationAction
                 label="Home"
